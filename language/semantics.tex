@@ -32,131 +32,113 @@ that is, intuitionally, to judge the processing system OK if it works as the sam
 We have to define the behaviour of evaluation process of expressions clearly.
 To this end, we define the \emph{evaluation} process of expression by a big-step semantics shown below.
 
-An \emph{evaluation relation} is a four-term relation of the form $\evalRel{\valuation}{e_1}{e_2}$.
+An \emph{evaluation relation} is a four-term relation of the form $\evalRel{\valuation}{h}{e}{h'}{v}$.
 
 The evaluation rules of YuchiKaml are shown below:
 
+Using this small-step evaluation relation, we define the next big-step evaluation relation.
 
-\todo{modify totally. count Histories}
 \infrule[E-Var]
-{\valuation(x) = v}
-{\evalRel{\valuation}{x}{v}}
-
-\infrule[E-AppLeft]
-{\evalRel{\valuation}{e_1}{e_1'}}
-{\evalRel{\valuation}{e_1\ e_2}{e_1'\ e_2}}
-
-\infrule[E-AppRight]
-{\evalRel{\valuation}{e_2}{e_2'}}
-{\evalRel{\valuation}{v_1\ e_2}{v_1'\ e_2'}}
-
-\infrule[E-AppCls]
-{\evalRel{\valuation'\cup\set{x\mapsto v}}{e_1}{e_1'}}
-{\evalRel{\valuation}{(x, e_1, \valuation')\ v_2 }{(x, e_1', \valuation') v_2}}
-
-
-\infrule[E-AppCls2]
 {}
-{\evalRel{\valuation}{(x, v_1, \valuation')\ v_2 }{v_1}}
+{\evalRel{\valuation}{h}{x}{h}{\valuation(x)}}
 
+\infrule[E-App]
+{\evalRel{\valuation}{h}{e_1}{h'}{(x,e_1',\valuation')} \andalso
+{\evalRel{\valuation}{h'}{e_2}{h''}{v_2}}}
+{\evalRel{\valuation}{h}{e_1\ e_2}{h'''}{v_1'}}
 
-\infrule[E-AppBuiltIn]
-{f_1@v_2 = v_3 }{\evalRel{\valuation}{f_1\ v_2}{v_3}}
-
-
-\infrule[E-BinOp-Left]
-{\evalRel{\valuation}{e_1}{e_1'}}
-{\evalRel{\valuation}{e_1 \binOp e_2}{e_1' \binOp e_2}}
-
-
-\infrule[E-BinOp-Right]
-{\evalRel{\valuation}{e_2}{e_2'}}
-{\evalRel{\valuation}{v_1 \binOp e_2}{v_1 \binOp e_2'}}
-
+\infrule[E-Not]
+{\evalRel{\valuation}{h}{e}{h'}{b}}
+{\evalRel{\valuation}{h}{!e}{h'}{\interp{!}b}}
 
 \infrule[E-Mul]
-{n_1 \interp{*} n_2 = n_3}
-{\evalRel{\valuation}{n_1 * n_2}{n_3 }}
+{\evalRel{\valuation}{h}{e_1}{h'}{n_1} \andalso
+\evalRel{\valuation}{h'}{e_2}{h''}{n_2}}
+{\evalRel{\valuation}{h}{e_1 * e_2}{h''}{n_1 \interp{*}n_2}}
+
 \infrule[E-Div]
-{n_1 \interp{/}n_2 = n_3}
-{\evalRel{\valuation}{n_1 / n_2}{n_3 }}
+{\evalRel{\valuation}{h}{e_1}{h'}{n_1} \andalso
+\evalRel{\valuation}{h'}{e_2}{h''}{n_2}}
+{\evalRel{\valuation}{h}{e_1 / e_2}{h''}{n_1 \interp{/}n_2}}
+
 
 \infrule[E-Plus]
-{n_1 \interp{+} n_2 = n_3}
-{\evalRel{\valuation}{n_1 + n_2}{n_3 }}
+{\evalRel{\valuation}{h}{e_1}{h'}{n_1} \andalso
+\evalRel{\valuation}{h'}{e_2}{h''}{n_2}}
+{\evalRel{\valuation}{h}{e_1 + e_2}{h''}{n_1 \interp{+}n_2}}
+
 \infrule[E-Minus]
-{n_1 \interp{-} n_2 = n_3}
-{\evalRel{\valuation}{n_1 - n_2}{n_3 }}
+{\evalRel{\valuation}{h}{e_1}{h'}{n_1} \andalso
+\evalRel{\valuation}{h'}{e_2}{h''}{n_2}}
+{\evalRel{\valuation}{h}{e_1 - e_2}{h''}{n_1 \interp{-}n_2}}
 
 \infrule[E-Leq]
-{n_1 \interp{\leq} n_2 = b_3}
-{\evalRel{\valuation}{n_1 \leq n_2}{b_3 }}
+{\evalRel{\valuation}{h}{e_1}{h'}{n_1} \andalso
+\evalRel{\valuation}{h'}{e_2}{h''}{n_2}}
+{\evalRel{\valuation}{h}{e_1 \leq e_2}{h''}{n_1 \interp{\leq}n_2}}
+
 \infrule[E-Lt]
-{n_1 \interp{<} n_2 = b_3}
-{\evalRel{\valuation}{n_1 < n_2}{b_3 }}
+{\evalRel{\valuation}{h}{e_1}{h'}{n_1} \andalso
+\evalRel{\valuation}{h'}{e_2}{h''}{n_2}}
+{\evalRel{\valuation}{h}{e_1 < e_2}{h''}{n_1 \interp{<}n_2}}
+
 \infrule[E-Geq]
-{n_1  \interp{\geq} n_2 = b_3}
-{\evalRel{\valuation}{n_1 \geq n_2}{b_3 }}
+{\evalRel{\valuation}{h}{e_1}{h'}{n_1} \andalso
+\evalRel{\valuation}{h'}{e_2}{h''}{n_2}}
+{\evalRel{\valuation}{h}{e_1 \geq e_2}{h''}{n_1 \interp{\geq}n_2}}
+
 \infrule[E-Gt]
-{n_1 \interp{>} n_2 = b_3}
-{\evalRel{\valuation}{n_1 > n_2}{b_3 }}
-
-
-\infrule[E-And]
-{b_1 \interp{\logAnd} b_2 = b_3}
-{\evalRel{\valuation}{b_1 \logAnd{} b_2}{b_3 }}
-\infrule[E-Or]
-{b_1 \interp{\logOr} b_2 = b_3}
-{\evalRel{\valuation}{b_1 \logOr{} b_2}{b_3 }}
-
+{\evalRel{\valuation}{h}{e_1}{h'}{n_1} \andalso
+\evalRel{\valuation}{h'}{e_2}{h''}{n_2}}
+{\evalRel{\valuation}{h}{e_1 > e_2}{h''}{n_1 \interp{>}n_2}}
 
 \infrule[E-Eq]
-{(v_1 = v_2) = b_3}
-{\evalRel{\valuation}{v_1 = v_2}{ b_3}}
+{\evalRel{\valuation}{h}{e_1}{h'}{v_1} \andalso
+\evalRel{\valuation}{h'}{e_2}{h''}{v_2}}
+{\evalRel{\valuation}{h}{e_1 = e_2}{h''}{v_1 \interp{=}v_2}}
+
 \infrule[E-Neq]
-{(v_1 \not= v_2) = b_3}
-{\evalRel{\valuation}{v_1 \not= v_2}{ b_3}}
+{\evalRel{\valuation}{h}{e_1}{h'}{v_1} \andalso
+\evalRel{\valuation}{h'}{e_2}{h''}{v_2}}
+{\evalRel{\valuation}{h}{e_1 \not= e_2}{h''}{v_1 \interp{\not=}v_2}}
 
-\infrule[E-IFCond]
-{\evalRel{\valuation}{e_1}{e_1'}}
-{\evalRel{\valuation}{\ifToken e_1 \thenToken e_2 \elseToken e_3}{\ifToken e_1' \thenToken e_2 \elseToken e_3}}
+\infrule[E-And]
+{\evalRel{\valuation}{h}{e_1}{h'}{b_1} \andalso
+\evalRel{\valuation}{h'}{e_2}{h''}{b_2}}
+{\evalRel{\valuation}{h}{e_1 \logAnd{} e_2}{h''}{v_1 \interp{\logAnd}v_2}}
 
+\infrule[E-Or]
+{\evalRel{\valuation}{h}{e_1}{h'}{b_1} \andalso
+\evalRel{\valuation}{h'}{e_2}{h''}{b_2}}
+{\evalRel{\valuation}{h}{e_1 \logOr{} e_2}{h''}{v_1 \interp{\logOr} v_2}}
 
-\infrule[E-IfTrue]
-{}
-{\evalRel{\valuation}{\ifToken \trueToken \thenToken e_2 \elseToken e_3}{ e_2}}
+\infrule[E-If-True]
+{\evalRel{\valuation}{h}{e_1}{h'}{\trueToken} \andalso
+\evalRel{\valuation}{h'}{e_2}{h''}{v_2}}
+{\evalRel{\valuation}{h}{\ifStructure{e_1}{e_2}{e_3}}{h''}{v_2}}
 
-\infrule[E-IfFalse]
-{}
-{\evalRel{\valuation}{\ifToken \trueToken \thenToken e_2 \elseToken e_3}{ e_3}}
+\infrule[E-If-False]
+{\evalRel{\valuation}{h}{e_1}{h'}{\falseToken} \andalso
+\evalRel{\valuation}{h'}{e_3}{h''}{v_3}}
+{\evalRel{\valuation}{h}{\ifStructure{e_1}{e_2}{e_3}}{h''}{v_3}}
 
-\infrule[E-LetBody]
-{\evalRel{\valuation}{e_1}{e_1'}}
-{\evalRel{\valuation}{\letToken x = e_1\in e_2 }{\letToken x = e_1'\inToken e_2 }}
-
-\infrule[E-LetRem]
-{\evalRel{\valuation\cup \set{x \mapsto v_1}}{e_2}{e_2'}}
-{\evalRel{\valuation}{\letToken x = v_1\inToken e_2 }{\letToken x = v_1\inToken e_2' }}
-
-\infrule[E-LetValue]
-{}
-{\evalRel{\valuation}{\letToken x = v_1\inToken v_2 }{v_2}}
-
+\infrule[E-Let]
+{
+    \evalRel{\valuation}{h}{e_1}{h'}{v_1} \andalso
+    \evalRel{\valuation\cup\set{x\mapsto v_1}}{h'}{e_2}{h''}{v_2}
+}{
+    \evalRel{\valuation}{h}{\letStructure{x}{e_1}{e_2}}{h''}{v_2}
+}
 
 \infrule[E-LetRec]
-{}
-{}
-\todo{ define it.}
+{\evalRel{\mu X. \valuation\cup\set{f \mapsto (x, e_1, X)}}{h}{e_2}{h'}{v_2}}
+{\evalRel{\valuation}{h}{\letRecStructure{f}{x}{e_1}{e_2}}{h'}{v_2}}
 
+\infrule[E-AppBuiltIn]
+{\evalRel{\valuation}{h}{e_1}{h'}{\builtinFunction} \andalso
+\evalRel{\valuation}{h'}{e_2}{h''}{v_2}}
+{\evalRel{\valuation}{h}{e_1\ e_2}{\seq{h'', (\builtinFunction, v_2)}}{(\builtinFunction h'' v_2)}}
 
 \infrule[E-Abs]
 {}
-{\evalRel{\valuation}{\abs{x}{e}}{(x, e, \valuation)}}
-
-Using this small-step evaluation relation, we define the next big-step evaluation relation.
-
-\begin{note}
-    For any expression $e_1$, if $\valuation$, $e_2$ and $e_3$ satisfy $\evalRel{\valuation}{e_1}{e_2}$ and $\evalRel{\valuation}{e_1}{e_3}$, then $e_2 = e_3$.
-\end{note}
-
-\subsubsection{Big-Step Evaluation}
+{\evalRel{\valuation}{h}{\abs{x}{e}}{h}{(x,e,\valuation{})}}
