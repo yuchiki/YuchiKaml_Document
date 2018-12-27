@@ -3,7 +3,7 @@
 
 Then we define the semantics of expressions.
 We assume that the behaviour of built-in functions are given.
-That is, built-in functions is a deterministic.
+That is, built-in functions are assumed deterministic.
 
 \subsubsection{Value}
 \emph{Values} of expressions are listed as below:
@@ -21,11 +21,8 @@ That is, built-in functions is a deterministic.
 Here $\variables$ is the set of the variables and $\values$ is the set of the values.
 
 \begin{note}
-We assume that all the built-in functions are at least function.
-It means, all the built-in functions return the same value for the same input, if it does not diverge.
-This is not a correct assumption. for example, Random function and Read function may return variable values.
-the aim of this assumption is to define the possible implementations of processing systems.
-that is, intuitionally, to judge the processing system OK if it works as the same as the expected behaviour under this assumption.
+We assume that all the built-in functions return the same value for the same input, if it does not diverge.
+This is enough to see weather different two ways of execution of a program is equivalent or not ,given a situation.
 \end{note}
 
 \subsubsection{Small-Step Evaluation}
@@ -35,8 +32,6 @@ To this end, we define the \emph{evaluation} process of expression by a big-step
 An \emph{evaluation relation} is a four-term relation of the form $\evalRel{\valuation}{h}{e}{h'}{v}$.
 
 The evaluation rules of YuchiKaml are shown below:
-
-Using this small-step evaluation relation, we define the next big-step evaluation relation.
 
 \infrule[E-Var]
 {}
@@ -142,3 +137,8 @@ Using this small-step evaluation relation, we define the next big-step evaluatio
 \infrule[E-Abs]
 {}
 {\evalRel{\valuation}{h}{\abs{x}{e}}{h}{(x,e,\valuation{})}}
+
+
+We write $\interp{e}$ for $(h, v)$ such that $\evalRel{\emptyset}{\seq{}}{e}{h}{v}$.
+
+A \emph{valid execution} of a YuchiKaml program expression $e$ has the built-in function call history $h$ and the return value $v$ such that $(h,v)=\interp{e}$.
