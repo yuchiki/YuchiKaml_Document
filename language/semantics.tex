@@ -25,7 +25,9 @@ We assume that all the built-in functions return the same value for the same inp
 This is enough to see weather different two ways of execution of a program is equivalent or not ,given a situation.
 \end{note}
 
-\subsubsection{Small-Step Evaluation}
+\subsubsection{Evaluation Relation}
+\label{sec: Evaluation Realation}
+
 We have to define the behaviour of evaluation process of expressions clearly.
 To this end, we define the \emph{evaluation} process of expression by a big-step semantics shown below.
 
@@ -138,7 +140,15 @@ The evaluation rules of YuchiKaml are shown below:
 {}
 {\evalRel{\valuation}{h}{\abs{x}{e}}{h}{(x,e,\valuation{})}}
 
-
 We write $\interp{e}$ for $(h, v)$ such that $\evalRel{\emptyset}{\seq{}}{e}{h}{v}$.
 
-A \emph{valid execution} of a YuchiKaml program expression $e$ has the built-in function call history $h$ and the return value $v$ such that $(h,v)=\interp{e}$.
+\subsubsection{Valid Execution}
+
+The evaluation process shown above is just one of the ways of possible evaluations.
+Real Implementation of YuchiKaml may be done in a more optimized way, or in av completely different way which gives the result equivalent to that of the process in Section \ref{sec: Evaluation Realation}.
+We define the valid ways of executions using the evaluation relation.
+
+\begin{definition}[valid execution]
+    Assume that the behaviour of built-in functions are already given.
+    An execution of a YuchiKaml expression $e$, which has the history $h$ of built-in function calls and the return value $v$, is \emph{valid} if $(h,v)=\interp{e}$.
+\end{definition}
