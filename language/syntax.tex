@@ -45,7 +45,7 @@ We show the list and syntax sugars and how they are desugared.
 
 The semantics of expressions, introduced in a later section, is defined for desugared expressions.
 
-\subsubsection{real notation}
+\subsubsection{Actual Notation}
 
 In real source codes, the symbols above are notated as follows:
 
@@ -59,3 +59,14 @@ In real source codes, the symbols above are notated as follows:
     &\composition & >>\\
     &\abs{x}{e} & \backslash x -> e
 \end{align*}
+
+\subsubsection{Comment}
+
+YuchiKaml has two kinds of comments.
+
+\begin{description}
+    \item[Line Comment]
+        Characters from \emph{//} to the end of line are ignored.
+    \item[Bracket Comment]
+        Characters from \emph{(*} to \emph{*)} are ignored.
+\end{description}
