@@ -4,21 +4,25 @@ In this section, we define the syntax of YuchikiML.
 
 \subsubsection{Expression}
 
-\emph{Expressions} of YuchiKaml are defined by the following BNF equations:
+First, we define the expressions of YuchikiML.
 
-\begin{align*}
-    e \defeq    & () \mid x \mid n \mid \trueToken \mid \falseToken \mid s \mid (e)\\
-                &\mid e\ e \mid \logNot e\\
-                &\mid e * e \mid e / e\\
-                &\mid e + e \mid e - e\\
-                &\mid e \leq e \mid e < e \mid e \geq e \mid e > e\\
-                &\mid e = e \mid e \not= e\\
-                &\mid e \logAnd e\\
-                &\mid e \logOr e\\
-                &\mid e \triangleright e \mid e \composition e\\
-                &\mid \ifStructure{e}{e}{e} \mid \letStructure{x\ \tilde{a}}{e}{e} \mid \letRecStructure{f}{a_1\ \tilde{a}}{e}{e} \mid \abs{x}{e}\\
-                &\mid e\opCol{}e
-\end{align*}
+\begin{definition}[surface expression]
+    A \emph{surface expression} of YuchiKaml is defined by the following BNF equations:
+
+    \begin{align*}
+        e \defeq    & () \mid x \mid n \mid \trueToken \mid \falseToken \mid s \mid (e)\\
+                    &\mid e\ e \mid \logNot e\\
+                    &\mid e * e \mid e / e\\
+                    &\mid e + e \mid e - e\\
+                    &\mid e \leq e \mid e < e \mid e \geq e \mid e > e\\
+                    &\mid e = e \mid e \not= e\\
+                    &\mid e \logAnd e\\
+                    &\mid e \logOr e\\
+                    &\mid e \triangleright e \mid e \composition e\\
+                    &\mid \ifStructure{e}{e}{e} \mid \letStructure{x\ \tilde{a}}{e}{e} \mid \letRecStructure{f}{a_1\ \tilde{a}}{e}{e} \mid \abs{x}{e}\\
+                    &\mid e\opCol{}e
+    \end{align*}
+\end{definition}
 
 The operators defined in earlier rows have stronger precedences than the operators defined in later rows.
 For example, $1 + 2 * 3$ is not parsed as $(1 + 2) * 3$, but $1 + ( 2 * 3)$.
@@ -28,22 +32,6 @@ For example, $1 + 2 * 3$ is not parsed as $(1 + 2) * 3$, but $1 + ( 2 * 3)$.
 
     \lstinputlisting[caption=gcd, language=ML]{samples/gcd}
 \end{example}
-
-\subsubsection{Syntax Sugar}
-Some of the expressions shown above are syntactic sugars.
-We show the list and syntax sugars and how they are desugared.
-
-\begin{align*}
-        e_1 \triangleright e_2 &\defeq e_2\ e_1 \\
-        e_1 \composition e_2 &\defeq \abs{x}{g (f x)}\\
-        \letStructure{f\ a_{1} \cdots a_n}{e_1}{e_2}&\defeq
-            \letStructure{f}{\lambda a_1 . \cdots \lambda a_n.\ {e_1}}{e_2}\\
-        \letRecStructure{f}{a\ b_{1} \cdots b_n}{e_1}{e_2}&\defeq
-            \letRecStructure{f}{a}{\lambda b_1 . \cdots \lambda b_n.\ {e_1}}{e_2}\\
-        e_1\opCol{}e_2 &\defeq \letStructure{\_}{e_1}{e_2}
-\end{align*}
-
-The semantics of expressions, introduced in a later section, is defined for desugared expressions.
 
 \subsubsection{Actual Notation}
 
@@ -60,13 +48,35 @@ In real source codes, the symbols above are notated as follows:
     &\abs{x}{e} & \backslash x -> e
 \end{align*}
 
+
 \subsubsection{Comment}
 
 YuchiKaml has two kinds of comments.
 
 \begin{description}
-    \item[Line Comment]
+    \item[Line Comment:]
         Characters from \emph{//} to the end of line are ignored.
-    \item[Bracket Comment]
+    \item[Bracket Comment:]
         Characters from \emph{(*} to \emph{*)} are ignored.
 \end{description}
+
+
+\subsubsection{Syntax Sugar}
+Some of the expressions shown above are syntactic sugars.
+We show the list and syntax sugars and how they are desugared.
+
+\begin{align*}
+        e_1 \triangleright e_2 &\defeq e_2\ e_1 \\
+        e_1 \composition e_2 &\defeq \abs{x}{g (f x)}\\
+        \letStructure{f\ a_{1} \cdots a_n}{e_1}{e_2}&\defeq
+            \letStructure{f}{\lambda a_1 . \cdots \lambda a_n.\ {e_1}}{e_2}\\
+        \letRecStructure{f}{a\ b_{1} \cdots b_n}{e_1}{e_2}&\defeq
+            \letRecStructure{f}{a}{\lambda b_1 . \cdots \lambda b_n.\ {e_1}}{e_2}\\
+        e_1\opCol{}e_2 &\defeq \letStructure{\_}{e_1}{e_2}
+\end{align*}
+
+\begin{definition}[expression]
+    We call a desugared surface expression as just \emph{expression}.
+\end{definition}
+
+The semantics of expressions, introduced in a later section, is defined for \emph{expressions}, not \emph{surface expressions}.
